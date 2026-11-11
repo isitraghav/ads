@@ -1,0 +1,7 @@
+id,hypothesis,2026 effect,verdict
+H1a,Missouri border -> fewer liters/adult,-44%,"SUPPORTED (4/4 checks, both years; also in $)"
+H1b,tax-gap dose-response,-0.022 log per $,INCONCLUSIVE (fails population weighting)
+H1c,fewer 1.75 L bottles at the MO border,-7.2 pts,INCONCLUSIVE (fails population weighting)
+H1d,bigger Iowa neighbour -> fewer liters,-0.060,NOT SUPPORTED (p ~ 0.10)
+H2,% Hispanic -> agave share,+0.81 pts per +10 pts,"SUPPORTED (4/4 checks, both years)"
+H3,new licence -> incumbents order less,-13%; diversion 60% (CI 28-129%),SUPPORTED (clean pre-trend; disclosed deviation)

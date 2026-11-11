@@ -1,0 +1,8 @@
+Source: Tax Foundation, "Distilled Spirits Taxes by State, 2026" (published 22 May 2026)
+URL:    https://taxfoundation.org/data/all/state/distilled-spirits-taxes/
+Table:  "State Spirits Excise Tax Rates in Dollars per Gallon, as of January 2026"
+Scope:  off-premises sales of 40% ABV spirits in 750 mL containers; federal tax excluded.
+        Control-state figures (Iowa) are implied rates, not formal taxes.
+Transcribed by hand on 2026-11-11 (7 rows: Iowa and its six neighbouring states).
+Cross-check source: Federation of Tax Administrators, "State Tax Rates on Distilled Spirits"
+        https://taxadmin.org/state-distilled-spirits-excise-tax-rates/

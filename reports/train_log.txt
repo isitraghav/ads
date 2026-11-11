@@ -1,0 +1,37 @@
+2026/11/11 03:23:49 INFO mlflow.store.db.utils: Creating initial MLflow database tables...
+2026/11/11 03:23:49 INFO mlflow.store.db.utils: Updating database tables
+2026/11/11 03:23:50 INFO mlflow.tracking.fluent: Experiment with name 'abd_next_month_forecast' does not exist. Creating a new experiment.
+rows  train 220,335  valid 58,229  test 79,275
+baselines done
+ridge_log: alone 0.2215 | ensemble w=0.35 0.1467 (1s)
+random_forest: alone 0.1568 | ensemble w=0.6 0.1429 (48s)
+xgb_squared_log: alone 0.2386 | ensemble w=0.35 0.1465 (10s)
+xgb_tweedie: alone 0.1644 | ensemble w=0.6 0.1425 (10s)
+  trial 00: ensemble county WAPE 0.1429 (w=0.55, bias -0.028)
+  trial 01: ensemble county WAPE 0.1457 (w=0.5, bias -0.026)
+  trial 02: ensemble county WAPE 0.1441 (w=0.55, bias -0.018)
+  trial 03: ensemble county WAPE 0.1455 (w=0.4, bias -0.023)
+  trial 04: ensemble county WAPE 0.1431 (w=0.6, bias -0.020)
+  trial 05: ensemble county WAPE 0.1427 (w=0.55, bias -0.018)
+  trial 06: ensemble county WAPE 0.1441 (w=0.6, bias -0.010)
+  trial 07: ensemble county WAPE 0.1435 (w=0.55, bias -0.016)
+  trial 08: ensemble county WAPE 0.1460 (w=0.5, bias -0.013)
+  trial 09: ensemble county WAPE 0.1447 (w=0.5, bias -0.028)
+  trial 10: ensemble county WAPE 0.1460 (w=0.65, bias -0.018)
+  trial 11: ensemble county WAPE 0.1438 (w=0.5, bias -0.021)
+  trial 12: ensemble county WAPE 0.1457 (w=0.6, bias -0.015)
+  trial 13: ensemble county WAPE 0.1453 (w=0.55, bias -0.024)
+  trial 14: ensemble county WAPE 0.1431 (w=0.5, bias -0.026)
+  trial 15: ensemble county WAPE 0.1441 (w=0.55, bias -0.022)
+  trial 16: ensemble county WAPE 0.1439 (w=0.6, bias -0.026)
+  trial 17: ensemble county WAPE 0.1442 (w=0.5, bias -0.018)
+  trial 18: ensemble county WAPE 0.1475 (w=0.55, bias -0.005)
+  trial 19: ensemble county WAPE 0.1476 (w=0.6, bias -0.008)
+best params: {'max_depth': 6, 'learning_rate': 0.02, 'min_child_weight': 5, 'subsample': 0.6, 'colsample_bytree': 0.6, 'reg_lambda': 10.0, 'tweedie_variance_power': 1.4} trees: 543 weight: 0.55
+valid county WAPE with % Hispanic 0.1427 vs without 0.1434 -> DROP the ethnicity feature
+test (final): {'wape_store': 0.3901, 'bias': 0.0199, 'mae_store': 36.4128, 'wape_county': 0.1379, 'wape_state': 0.0515}
+interval coverage: {'store_coverage_p10_p90': 0.861, 'county_coverage_p10_p90': 0.775, 'county_coverage_below_p90': 0.924, 'target': 0.8}
+ablation all_features: test county WAPE 0.1382
+ablation no_ethnicity: test county WAPE 0.1379
+ablation no_county_features: test county WAPE 0.1386
+Nov-2026 forecast: 1,922,341 liters statewide; done in 575s

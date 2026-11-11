@@ -1,0 +1,12 @@
+# Raw sales files exceed GitHub's 100 MB limit: download them from data/links.txt
+data/raw/iowa_liquor_sales_2025/*.csv
+data/raw/iowa_liquor_sales_2026/*.csv
+*.zip
+# Rebuilt by scripts/01_build_ssot.py and 02_build_tables.py
+data/processed/sales_ssot.parquet
+data/processed/store_family_month.parquet
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+mlruns/

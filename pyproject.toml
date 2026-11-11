@@ -1,0 +1,23 @@
+[project]
+name = "iowa-spirits-demand"
+version = "1.0.0"
+description = "ADS end-term project: decision support for Iowa ABD spirits supply planning"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy>=2.0",
+    "pandas>=2.2",
+    "pyarrow>=17",
+    "scipy>=1.13",
+    "statsmodels>=0.14",
+    "scikit-learn>=1.5",
+    "xgboost>=2.1",
+    "shap>=0.46",
+    "matplotlib>=3.9",
+    "mlflow>=2.16",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "jupyter>=1.0",
+    "nbclient>=0.10",
+    "nbconvert>=7.16",
+    "ipykernel>=6.29",
+]

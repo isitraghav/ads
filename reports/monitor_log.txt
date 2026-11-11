@@ -1,0 +1,36 @@
+                    feature    psi    ref_mean    cur_mean    status  watched  expected_by_construction
+0             month_of_year  5.615       6.963       9.004     major    False                      True
+1          store_age_months  2.955       9.550      18.561     major    False                      True
+2             state_fam_yoy  2.045       0.931       0.962     major    False                      True
+3             business_days  1.984      21.772      21.668     major    False                      True
+4           cal_ratio_lag12  0.683       1.007       0.989     major    False                      True
+5            cal_ratio_lag1  0.376       1.021       1.001     major    False                      True
+6                order_days  0.202       4.358       4.336  moderate    False                      True
+7            state_fam_lag1  0.142  212912.772  212180.668  moderate    False                     False
+8                 roll6_std  0.052      42.932      39.078    stable     True                     False
+9             active_share6  0.052       0.734       0.679    stable     True                     False
+10               roll6_mean  0.049     101.532      91.968    stable     True                     False
+11  city_new_entrants_last3  0.042       0.529       0.381    stable    False                     False
+     month   model  status_quo
+0  2026-07  0.1341      0.1685
+1  2026-08  0.1300      0.1754
+2  2026-09  0.1465      0.1738
+3  2026-10  0.1405      0.1747
+     month  stale_2025_model  status_quo
+0  2026-01            0.2537      0.1856
+1  2026-02            0.1512      0.1603
+2  2026-03            0.1907      0.2026
+3  2026-04            0.1516      0.2036
+4  2026-05            0.1542      0.1704
+5  2026-06            0.1486      0.1616
+6  2026-07            0.1310      0.1685
+7  2026-08            0.1420      0.1754
+8  2026-09            0.1425      0.1738
+9  2026-10            0.1348      0.1747
+                          category_name        2025    2026          change
+0                          UNCLASSIFIED       0.000  1102.5     new in 2026
+1          AMERICAN CORDIALS & LIQUEURS   79385.950     0.0  absent in 2026
+2  AMERICAN DISTILLED SPIRITS SPECIALTY   16100.425     0.0  absent in 2026
+3          IMPORTED CORDIALS & LIQUEURS  176933.185     0.0  absent in 2026
+4  IMPORTED DISTILLED SPIRITS SPECIALTY  168232.875     0.0  absent in 2026
+{'retrain_now': False, 'reasons': ['no trigger fired: keep the scheduled monthly refit']}

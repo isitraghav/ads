@@ -1,0 +1,46 @@
+DATA SOURCES AND PROVENANCE - final project
+=============================================
+All sources are official publishers (state and federal government, plus one cited tax table). No Kaggle data.
+
+1) Iowa Liquor Sales, 2025  (Iowa Data Hub dataset 1262)
+   Publisher: Alcohol Operations Bureau, Iowa Department of Revenue / Alcoholic Beverages Division
+   Licence:   CC BY 4.0
+   Download:  https://idh-be.iowa.gov/api/v1/datasets/1262/rows.csv
+   Metadata:  https://idh-be.iowa.gov/api/v1/datasets/1262/   numRows 2,490,620; coverage 2025-01-01..2025-12-31;
+              status "Closed"; last updated 2026-11-05
+   Content:   spirits purchases by Iowa Class E licensees (grocery, convenience and liquor stores) from ABD,
+              one row per invoice line (store, date, item, bottles, dollars, liters)
+   Files:     data/raw/iowa_liquor_sales_2025/iowa_liquor_sales_2025_1262_rows_part_0001..0004.csv
+   Note:      the download zip also contained part_0005.csv (429,989 rows, 2025-08-27..2025-10-30), an exact
+              copy of rows in parts 3-4. It is excluded; parts 1-4 match numRows exactly.
+
+2) Iowa Liquor Sales, 2026  (Iowa Data Hub dataset 1263)
+   Same publisher and licence.
+   Download:  https://idh-be.iowa.gov/api/v1/datasets/1263/rows.csv
+   Metadata:  https://idh-be.iowa.gov/api/v1/datasets/1263/   numRows 2,029,764; coverage 2026-01-01..2026-10-30;
+              updated monthly; last updated 2026-11-05
+   Files:     data/raw/iowa_liquor_sales_2026/iowa_liquor_sales_2026_1263_rows_part_0001..0004.csv
+              (from project/iowa_liquor_sales_2026_1263_rows.zip, downloaded 2026-11-10)
+
+3) American Community Survey 5-year estimates 2020-2024 (US Census Bureau)
+   https://www2.census.gov/programs-surveys/acs/summary_file/2024/table-based-SF/data/5YRData/
+   16 tables (B01001 sex by age, B01002, B01003, B02001, B03003, B11001, B15003, B17001, B19013, B19083,
+   B19301, B23025, B25003, B25010, B25064, B25077), Iowa counties only (GEO_ID 0500000US19xxx)
+   Files: data/raw/census_acs/  (downloaded 2026-10-24 by the pre-submission script fetch_census.py)
+
+4) County adjacency file 2024 and 2024 Gazetteer counties (US Census Bureau, Geography Division)
+   https://www2.census.gov/geo/docs/reference/county_adjacency/county_adjacency2024.txt
+   https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2024_Gazetteer/2024_Gaz_counties_national.zip
+   Used for: which counties touch which neighbouring state, the largest Iowa neighbour, land area, centroid
+   Files: data/raw/census_geo/  (downloaded 2026-11-11)
+
+5) State spirits excise tax rates, January 2026 (Tax Foundation)
+   https://taxfoundation.org/data/all/state/distilled-spirits-taxes/   ("Distilled Spirits Taxes by State, 2026")
+   Cross-check: Federation of Tax Administrators, https://taxadmin.org/state-distilled-spirits-excise-tax-rates/
+   Used for: the tax gap between Iowa ($15.14/gal implied, control state) and its neighbours (H1b)
+   File: data/raw/state_tax/tax_foundation_spirits_excise_2026.csv (7 rows, transcribed 2026-11-11; see SOURCE.txt)
+
+JOIN KEYS
+   sales <-> census/geography : 5-digit county FIPS (state 19 + county), many-to-one, 100% matched
+   sales <-> store attributes : store_no (stable across 2025 and 2026; 2,078 stores appear in both years)
+   county <-> tax             : state FIPS of the adjacent counties

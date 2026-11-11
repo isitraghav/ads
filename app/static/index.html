@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ABD Supply Planner</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --ink:#1d2330; --muted:#5b6475; --line:#e2e5ea; --accent:#1f5fa8; --warn:#b4581b; --ok:#2f7d4f; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#14171c; --card:#1d2128; --ink:#e7eaf0; --muted:#9aa3b2; --line:#2c323c; --accent:#6aa3e8; --warn:#e39a5f; --ok:#6cc08f; } }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:20px 24px 8px; } h1 { margin:0; font-size:22px; } header p { margin:4px 0 0; color:var(--muted); }
+  main { display:grid; gap:16px; padding:16px 24px 32px; grid-template-columns: 1fr; max-width:1200px; }
+  @media (min-width: 980px) { main { grid-template-columns: 2fr 1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .card h2 { margin:0 0 10px; font-size:16px; }
+  .controls { display:flex; flex-wrap:wrap; gap:16px; align-items:end; }
+  label { font-size:13px; color:var(--muted); display:flex; flex-direction:column; gap:4px; }
+  select, input { font:inherit; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:var(--card); color:var(--ink); }
+  table { width:100%; border-collapse:collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align:right; padding:6px 8px; border-bottom:1px solid var(--line); }
+  th:first-child, td:first-child { text-align:left; } th { font-size:12px; color:var(--muted); font-weight:600; }
+  tr.click { cursor:pointer; } tr.click:hover { background:color-mix(in srgb, var(--accent) 8%, transparent); }
+  .kpis { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:10px; margin-bottom:12px; }
+  .kpi { border:1px solid var(--line); border-radius:8px; padding:10px; } .kpi b { display:block; font-size:20px; }
+  .kpi span { font-size:12px; color:var(--muted); }
+  .tag { display:inline-block; font-size:12px; padding:1px 8px; border-radius:99px; border:1px solid var(--line); color:var(--muted); }
+  .tag.warn { color:var(--warn); border-color:var(--warn); } .tag.ok { color:var(--ok); border-color:var(--ok); }
+  .muted { color:var(--muted); font-size:13px; } .scroll { max-height:340px; overflow:auto; }
+  .bar { height:8px; background:var(--accent); border-radius:4px; display:inline-block; vertical-align:middle; }
+  .neg { color:var(--warn); } .pos { color:var(--ok); }
+</style>
+</head>
+<body>
+<header>
+  <h1>ABD Spirits Supply Planner</h1>
+  <p>Next-month (November 2026) liters per county, spirits family and store, from an ensemble of a tuned XGBoost model and a calendar-adjusted seasonal naive.</p>
+</header>
+<main>
+  <section class="card">
+    <div class="controls">
+      <label>County <select id="county"></select></label>
+      <label>Service level <span><input id="sl" type="range" min="0.5" max="0.99" step="0.01" value="0.9"> <b id="slv">90%</b></span></label>
+    </div>
+    <p class="muted">Service level = probability that planned stock covers demand. A higher level adds safety stock. Pick it from the cost of a stock-out versus the cost of holding stock.</p>
+    <div class="kpis" id="kpis"></div>
+    <h2>Plan by spirits family</h2>
+    <table id="fam"><thead><tr><th>Family</th><th>Last year (Nov-25)</th><th>Forecast</th><th>P10–P90</th><th>Safety stock</th><th>Plan quantity</th></tr></thead><tbody></tbody></table>
+    <h2 style="margin-top:18px">Stores <span class="muted">(click for drivers)</span></h2>
+    <div class="scroll"><table id="stores"><thead><tr><th>Store</th><th>Type</th><th>Status</th><th>Last year</th><th>Forecast</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <aside style="display:grid; gap:16px; align-content:start">
+    <section class="card" id="store"><h2>Store detail</h2><p class="muted">Select a store.</p></section>
+    <section class="card" id="mon"><h2>Model health</h2><p class="muted">Loading…</p></section>
+  </aside>
+</main>
+<script>
+const fmt = n => n == null ? "–" : Math.round(n).toLocaleString();
+const $ = id => document.getElementById(id);
+async function j(u){ const r = await fetch(u); if(!r.ok) throw new Error(await r.text()); return r.json(); }
+
+async function init(){
+  const cs = await j("/counties");
+  $("county").innerHTML = cs.map(c => `<option value="${c.county_fips_code}">${c.county_name}${c.geo_borders_mo ? " (MO border)" : ""}</option>`).join("");
+  $("county").value = "19153";
+  $("county").onchange = load; $("sl").oninput = () => { $("slv").textContent = Math.round($("sl").value*100)+"%"; load(); };
+  load(); monitor();
+}
+async function load(){
+  const d = await j(`/forecast/county/${$("county").value}?service_level=${$("sl").value}`);
+  const ch = d.total_forecast / d.total_last_year - 1;
+  $("kpis").innerHTML = `
+    <div class="kpi"><span>Forecast, Nov 2026</span><b>${fmt(d.total_forecast)} L</b></div>
+    <div class="kpi"><span>Same month last year</span><b>${fmt(d.total_last_year)} L</b></div>
+    <div class="kpi"><span>Change vs last year</span><b class="${ch<0?'neg':'pos'}">${(100*ch).toFixed(1)}%</b></div>
+    <div class="kpi"><span>Adults 21+</span><b>${fmt(d.context.adults_21_plus)}</b></div>
+    ${d.context.borders_missouri ? '<div class="kpi"><span>Context</span><b class="neg" style="font-size:14px">Missouri border: ~44% fewer L/adult (H1)</b></div>' : ''}`;
+  const mx = Math.max(...d.families.map(f => f.plan_quantity));
+  $("fam").querySelector("tbody").innerHTML = d.families.map(f => `<tr><td>${f.family}</td><td>${fmt(f.last_year)}</td><td>${fmt(f.forecast)}</td>
+     <td>${fmt(f.p10)}–${fmt(f.p90)}</td><td>${fmt(f.safety_stock)}</td>
+     <td><span class="bar" style="width:${60*f.plan_quantity/mx}px"></span> ${fmt(f.plan_quantity)}</td></tr>`).join("");
+  $("stores").querySelector("tbody").innerHTML = d.stores.map(s => `<tr class="click" data-id="${s.store_no}"><td>${s.store_name}<br><span class="muted">${s.store_city}</span></td>
+     <td>${s.store_type.replace("_"," ")}</td><td>${s.entry_type === "new_store" ? '<span class="tag warn">new store</span>' : s.entry_type === "ownership_change" ? '<span class="tag">new owner</span>' : ''}</td>
+     <td>${fmt(s.last_year)}</td><td>${fmt(s.forecast)}</td></tr>`).join("");
+  document.querySelectorAll("#stores tr.click").forEach(tr => tr.onclick = () => store(tr.dataset.id));
+}
+async function store(id){
+  const s = await j(`/forecast/store/${id}?service_level=${$("sl").value}`);
+  $("store").innerHTML = `<h2>${s.store_name}</h2><p class="muted">${s.city} · ${s.store_type.replace("_"," ")} · first order ${s.first_month}</p>` +
+    s.families.slice(0,4).map(f => `<p style="margin:10px 0 4px"><b>${f.family}</b>: ${fmt(f.forecast)} L <span class="muted">(P10–P90 ${fmt(f.p10)}–${fmt(f.p90)}; plan ${fmt(f.plan_quantity)})</span><br>
+      <span class="muted">= blend of model ${fmt(f.ml_component)} L and last-year-adjusted ${fmt(f.seasonal_component)} L</span></p>
+      <table>${f.drivers.map(x => `<tr><td>${x.feature}<span class="muted"> = ${x.value ?? "n/a"}</span></td><td class="${x.effect_pct<0?'neg':'pos'}">${x.effect_pct>0?'+':''}${x.effect_pct}%</td></tr>`).join("")}</table>`).join("") +
+    `<p class="muted">Drivers explain the gradient-boosting half of the ensemble: XGBoost TreeSHAP contributions on its log scale, shown as % change relative to an average store-family.</p>`;
+}
+async function monitor(){
+  const m = await j("/monitoring");
+  if(!m.retrain){ $("mon").innerHTML = `<h2>Model health</h2><p class="muted">${m.status}</p>`; return; }
+  const tag = m.retrain.retrain_now ? '<span class="tag warn">retrain recommended</span>' : '<span class="tag ok">healthy</span>';
+  $("mon").innerHTML = `<h2>Model health ${tag}</h2>
+   <p class="muted">Out-of-time test, Jul–Oct 2026 (county × family WAPE)</p>
+   <table><tr><th>Month</th><th>Model</th><th>Status quo</th></tr>${m.monthly_error.map(r => `<tr><td>${r.month}</td><td>${(100*r.model).toFixed(1)}%</td><td>${(100*r.status_quo).toFixed(1)}%</td></tr>`).join("")}</table>
+   <p class="muted" style="margin-top:10px">Largest feature drift (PSI, 2025 vs latest 3 months)</p>
+   <table>${m.drift.slice(0,5).map(r => `<tr><td>${r.feature}</td><td>${r.psi.toFixed(3)} <span class="tag ${r.status==='stable'?'ok':'warn'}">${r.status}</span></td></tr>`).join("")}</table>
+   <p class="muted" style="margin-top:10px">${m.retrain.reasons.join("<br>")}</p>`;
+}
+init().catch(e => document.body.insertAdjacentHTML("beforeend", `<p style="padding:24px;color:#b4581b">${e}</p>`));
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+INFO:     Started server process [10200]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8766 (Press CTRL+C to quit)
+INFO:     127.0.0.1:53687 - "GET /forecast/county/19153?service_level=0.95 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53688 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53689 - "GET /monitoring HTTP/1.1" 200 OK

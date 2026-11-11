@@ -1,0 +1,444 @@
+{
+  "generated_for": "2026-11",
+  "reference_window": "2025-07..2026-03",
+  "current_window": "2026-08..2026-10",
+  "drift": [
+    {
+      "feature": "month_of_year",
+      "psi": 5.6148,
+      "ref_mean": 6.9626,
+      "cur_mean": 9.0037,
+      "status": "major",
+      "watched": false,
+      "expected_by_construction": true
+    },
+    {
+      "feature": "store_age_months",
+      "psi": 2.955,
+      "ref_mean": 9.55,
+      "cur_mean": 18.5612,
+      "status": "major",
+      "watched": false,
+      "expected_by_construction": true
+    },
+    {
+      "feature": "state_fam_yoy",
+      "psi": 2.0447,
+      "ref_mean": 0.9311,
+      "cur_mean": 0.9623,
+      "status": "major",
+      "watched": false,
+      "expected_by_construction": true
+    },
+    {
+      "feature": "business_days",
+      "psi": 1.9836,
+      "ref_mean": 21.7721,
+      "cur_mean": 21.6685,
+      "status": "major",
+      "watched": false,
+      "expected_by_construction": true
+    },
+    {
+      "feature": "cal_ratio_lag12",
+      "psi": 0.6832,
+      "ref_mean": 1.0069,
+      "cur_mean": 0.989,
+      "status": "major",
+      "watched": false,
+      "expected_by_construction": true
+    },
+    {
+      "feature": "cal_ratio_lag1",
+      "psi": 0.376,
+      "ref_mean": 1.0209,
+      "cur_mean": 1.0009,
+      "status": "major",
+      "watched": false,
+      "expected_by_construction": true
+    },
+    {
+      "feature": "order_days",
+      "psi": 0.2016,
+      "ref_mean": 4.3579,
+      "cur_mean": 4.3365,
+      "status": "moderate",
+      "watched": false,
+      "expected_by_construction": true
+    },
+    {
+      "feature": "state_fam_lag1",
+      "psi": 0.1424,
+      "ref_mean": 212912.7717,
+      "cur_mean": 212180.668,
+      "status": "moderate",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "roll6_std",
+      "psi": 0.0523,
+      "ref_mean": 42.9325,
+      "cur_mean": 39.0779,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "active_share6",
+      "psi": 0.052,
+      "ref_mean": 0.7341,
+      "cur_mean": 0.6788,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "roll6_mean",
+      "psi": 0.0487,
+      "ref_mean": 101.5319,
+      "cur_mean": 91.9678,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "city_new_entrants_last3",
+      "psi": 0.0421,
+      "ref_mean": 0.5294,
+      "cur_mean": 0.3807,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "store_roll3",
+      "psi": 0.033,
+      "ref_mean": 901.7656,
+      "cur_mean": 826.5496,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "store_lag1",
+      "psi": 0.0311,
+      "ref_mean": 880.1623,
+      "cur_mean": 816.7212,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lag6",
+      "psi": 0.0266,
+      "ref_mean": 102.8192,
+      "cur_mean": 88.3916,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "roll3_mean",
+      "psi": 0.0254,
+      "ref_mean": 101.4039,
+      "cur_mean": 92.9639,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "store_lag12",
+      "psi": 0.0239,
+      "ref_mean": 881.6392,
+      "cur_mean": 918.4025,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lag3",
+      "psi": 0.0171,
+      "ref_mean": 104.8042,
+      "cur_mean": 95.2558,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "city_active_stores_lag1",
+      "psi": 0.0142,
+      "ref_mean": 21.5178,
+      "cur_mean": 21.6875,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lag2",
+      "psi": 0.0133,
+      "ref_mean": 101.5823,
+      "cur_mean": 92.265,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lag1_cal_adj",
+      "psi": 0.0113,
+      "ref_mean": 99.7973,
+      "cur_mean": 90.4155,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lines_lag1",
+      "psi": 0.011,
+      "ref_mean": 11.1612,
+      "cur_mean": 10.6216,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lag1",
+      "psi": 0.0109,
+      "ref_mean": 98.9599,
+      "cur_mean": 91.8235,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lag12_cal_adj",
+      "psi": 0.0063,
+      "ref_mean": 99.4677,
+      "cur_mean": 101.9939,
+      "status": "stable",
+      "watched": true,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "lag12",
+      "psi": 0.0056,
+      "ref_mean": 99.1624,
+      "cur_mean": 103.2713,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "family_share_roll3",
+      "psi": 0.0044,
+      "ref_mean": 0.1184,
+      "cur_mean": 0.1185,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "cty_pct_bachelors_or_higher",
+      "psi": 0.0003,
+      "ref_mean": 30.6107,
+      "cur_mean": 30.7146,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "geo_log_hub_ratio",
+      "psi": 0.0003,
+      "ref_mean": 0.2272,
+      "cur_mean": 0.2271,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "cty_median_household_income",
+      "psi": 0.0003,
+      "ref_mean": 74833.1099,
+      "cur_mean": 74941.2749,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "geo_pop_density",
+      "psi": 0.0002,
+      "ref_mean": 223.719,
+      "cur_mean": 225.8727,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "cty_pct_age_21_34",
+      "psi": 0.0002,
+      "ref_mean": 17.7042,
+      "cur_mean": 17.7277,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "log_population",
+      "psi": 0.0002,
+      "ref_mean": 10.9895,
+      "cur_mean": 11.0017,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "cty_poverty_rate",
+      "psi": 0.0002,
+      "ref_mean": 11.131,
+      "cur_mean": 11.126,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "cty_median_age",
+      "psi": 0.0002,
+      "ref_mean": 39.1866,
+      "cur_mean": 39.1633,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "geo_borders_mo",
+      "psi": 0.0,
+      "ref_mean": 0.0384,
+      "cur_mean": 0.0373,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    },
+    {
+      "feature": "geo_border_tax_gap",
+      "psi": 0.0,
+      "ref_mean": 2.9613,
+      "cur_mean": 2.9568,
+      "status": "stable",
+      "watched": false,
+      "expected_by_construction": false
+    }
+  ],
+  "monthly_error": [
+    {
+      "month": "2026-07",
+      "model": 0.1341,
+      "status_quo": 0.1685
+    },
+    {
+      "month": "2026-08",
+      "model": 0.13,
+      "status_quo": 0.1754
+    },
+    {
+      "month": "2026-09",
+      "model": 0.1465,
+      "status_quo": 0.1738
+    },
+    {
+      "month": "2026-10",
+      "model": 0.1405,
+      "status_quo": 0.1747
+    }
+  ],
+  "stale_model_decay": [
+    {
+      "month": "2026-01",
+      "stale_2025_model": 0.2537,
+      "status_quo": 0.1856
+    },
+    {
+      "month": "2026-02",
+      "stale_2025_model": 0.1512,
+      "status_quo": 0.1603
+    },
+    {
+      "month": "2026-03",
+      "stale_2025_model": 0.1907,
+      "status_quo": 0.2026
+    },
+    {
+      "month": "2026-04",
+      "stale_2025_model": 0.1516,
+      "status_quo": 0.2036
+    },
+    {
+      "month": "2026-05",
+      "stale_2025_model": 0.1542,
+      "status_quo": 0.1704
+    },
+    {
+      "month": "2026-06",
+      "stale_2025_model": 0.1486,
+      "status_quo": 0.1616
+    },
+    {
+      "month": "2026-07",
+      "stale_2025_model": 0.131,
+      "status_quo": 0.1685
+    },
+    {
+      "month": "2026-08",
+      "stale_2025_model": 0.142,
+      "status_quo": 0.1754
+    },
+    {
+      "month": "2026-09",
+      "stale_2025_model": 0.1425,
+      "status_quo": 0.1738
+    },
+    {
+      "month": "2026-10",
+      "stale_2025_model": 0.1348,
+      "status_quo": 0.1747
+    }
+  ],
+  "schema_drift": [
+    {
+      "category_name": "UNCLASSIFIED",
+      "2025": 0.0,
+      "2026": 1102.5,
+      "change": "new in 2026"
+    },
+    {
+      "category_name": "AMERICAN CORDIALS & LIQUEURS",
+      "2025": 79386.0,
+      "2026": 0.0,
+      "change": "absent in 2026"
+    },
+    {
+      "category_name": "AMERICAN DISTILLED SPIRITS SPECIALTY",
+      "2025": 16100.4,
+      "2026": 0.0,
+      "change": "absent in 2026"
+    },
+    {
+      "category_name": "IMPORTED CORDIALS & LIQUEURS",
+      "2025": 176933.2,
+      "2026": 0.0,
+      "change": "absent in 2026"
+    },
+    {
+      "category_name": "IMPORTED DISTILLED SPIRITS SPECIALTY",
+      "2025": 168232.9,
+      "2026": 0.0,
+      "change": "absent in 2026"
+    }
+  ],
+  "validation_wape_county": 0.14272165754247593,
+  "retrain": {
+    "retrain_now": false,
+    "reasons": [
+      "no trigger fired: keep the scheduled monthly refit"
+    ]
+  }
+}

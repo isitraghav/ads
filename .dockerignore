@@ -1,0 +1,14 @@
+.venv
+data/raw
+data/processed/*
+!data/processed/forecast_2026_11.parquet
+!data/processed/store_dim.parquet
+!data/processed/county_profile.parquet
+reports/*
+!reports/tables
+reports/tables/*
+!reports/tables/monitoring.json
+mlflow.db
+mlruns
+notebooks
+*.zip
