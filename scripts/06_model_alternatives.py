@@ -85,7 +85,7 @@ CANDIDATES = {
     "CatBoost (Tweedie)": dict(
         build=lambda n, es: cb.CatBoostRegressor(
             loss_function=f"Tweedie:variance_power={P}", iterations=n, learning_rate=0.05, depth=6,
-            random_seed=C.SEED, thread_count=-1, verbose=False, cat_features=CATS,
+            random_seed=C.SEED, thread_count=-1, verbose=False, allow_writing_files=False, cat_features=CATS,
             **({"early_stopping_rounds": 100} if es else {})),
         fit=lambda m, a, v: m.fit(as_str(a), a.y, **({"eval_set": (as_str(v), v.y)} if v is not None else {})),
         predict=lambda m, d: m.predict(as_str(d), prediction_type="Exponent"),
