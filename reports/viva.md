@@ -8,7 +8,8 @@ able to answer any section. Numbers come from the executed notebooks (`notebooks
 **How to use this guide**
 - Sections 1–2: the story. Learn the 60-second pitch by heart.
 - Sections 3–9: what we did, step by step, with every method explained.
-- Section 10: questions an instructor is likely to dig into, with answers.
+- Section 10: questions an instructor is likely to dig into, with answers, ending with **"Why X and not Y?"** for
+  every major choice (model, loss, ensemble, metrics, tests, tools), each backed by a number.
 - Sections 11–13: surprise scenarios, limitations, numbers to know.
 
 ---
@@ -355,6 +356,41 @@ forecasts. **Calibration check on test:** county P10–P90 covers **77.5%** (tar
 - **Over-buying removed:** the status quo plans ~**84,000 L/month** too much (≈ \$1.0M at cost).
 - Assumptions to state: one-month lead time, 20% annual holding cost, stock at ABD cost (\$12.25/L).
 
+### 8.9 Why XGBoost and not LightGBM or CatBoost? (we tested it: `scripts/06_model_alternatives.py`)
+Every alternative got exactly the same treatment as our XGBoost: the same 38 features and time split, default settings
+(learning rate 0.05, depth ≈ 6, early stopping on validation), Tweedie *p* = 1.4 where the library supports it, the
+ensemble weight chosen on validation, then a refit on train + validation and **one** score on the test months.
+
+| Model (untuned, blended with seasonal naive) | Fit time | Valid county WAPE | **Test county WAPE** | Test state WAPE | Test bias |
+|---|---|---|---|---|---|
+| **XGBoost, Tweedie** (our choice) | 7 s | 14.4% | **13.9%** | 5.1% | +1.7% |
+| LightGBM, Tweedie | 2 s | 14.3% | **13.9%** | 5.1% | +1.7% |
+| CatBoost, Tweedie | 92 s | 14.4% | 14.1% | 5.8% | +3.0% |
+| XGBoost, Poisson | 14 s | 14.0% | 14.1% | 5.9% | +2.6% |
+| sklearn HistGradientBoosting, Poisson | 13 s | **13.9%** | 14.3% | 5.1% | +1.8% |
+| *Same XGBoost, 3 different random seeds* | | *14.5–14.6%* | | | |
+| *Tuned final XGBoost (for reference)* | | *14.3%* | *13.8%* | *5.2%* | *+2.0%* |
+
+**How to read it:**
+1. **It is a tie.** All five land between 13.9% and 14.3% at county level. Changing only the random seed of the same
+   XGBoost moves validation WAPE by 0.2 points, so differences of a few tenths are noise.
+2. **LightGBM = XGBoost** (13.89% vs 13.92% on test, identical bias). LightGBM is 3× faster, but 7 seconds vs 2 seconds
+   doesn't matter at 220,000 training rows. Switching would buy nothing.
+3. **The validation "winner" lost on test.** HistGradientBoosting was best on validation (13.9%) and worst on test
+   (14.3%). Picking among near-ties on three validation months chases noise, so we keep the model we committed to.
+4. **CatBoost** is 13× slower and worse at the warehouse (state) level. Its strength, smart handling of
+   high-cardinality categoricals, doesn't apply: we have only two categorical features (family, store type).
+5. **The bottleneck is information, not the algorithm.** One seasonal cycle of history limits every model. The same
+   story as tuning (8.4): settings and libraries move results by tenths of a point; features and the ensemble moved
+   them by points.
+
+**Why XGBoost in the first place (before we had this evidence):** native Tweedie loss, native missing values and
+categoricals, built-in exact TreeSHAP (`pred_contribs`) for per-store explanations in the API, a single small model
+file (4 MB JSON) for serving, mature documentation, and it is the standard taught gradient-boosting library.
+**When LightGBM would be the right choice:** millions of rows (e.g. daily store × product forecasts), where its
+leaf-wise growth and speed matter. On small data, leaf-wise trees over-fit more easily and need careful
+`num_leaves` / `min_child_samples` settings.
+
 ---
 
 ## 9. Responsible AI and MLOps (notebook 04)
@@ -505,6 +541,64 @@ plan per family with P10–P90, opens a store to see its drivers, and overrides 
 **Q: What would you do with more time?** More years of history; weather and event calendars (football, State Fair,
 RAGBRAI); peer-based cold-start model; a randomised regional pilot (A/B) to measure operational value causally.
 
+### "Why X and not Y?" — every major choice, with the evidence behind it
+The pattern for answering: **(1) what we chose, (2) the alternative, (3) the number that decided it, (4) when the
+alternative would be better.** If we did *not* test an alternative, say so. That is stronger than pretending.
+
+#### The model
+| Question | Answer and evidence |
+|---|---|
+| **Why XGBoost, not LightGBM?** | Tested (8.9): **13.9% vs 13.9%** county WAPE on test, identical bias. A tie within seed noise (0.2 pts). LightGBM is faster, which matters at millions of rows, not at 220,000. |
+| **Why not CatBoost?** | Tested: 14.1% county, 5.8% state (vs 5.1%), +3.0% bias, 13× slower. Its advantage is high-cardinality categoricals; we have two small ones. |
+| **Why not Random Forest?** | Tested (script 03): test county WAPE alone **15.1% vs 14.6%** for XGBoost; blended on validation 14.29% vs 14.25% (a near-tie). XGBoost was kept because a forest only minimises squared error (no Tweedie loss for zero-heavy, skewed volumes), and boosting reduces *bias* where bagging reduces *variance*. Our problem is under-forecasting (bias). |
+| **Why not linear regression (Ridge)?** | Tested: test county WAPE **18.4%**, worse than the status quo (17.3%), with −19% bias on validation. Demand is full of interactions (a lag means different things for Costco and Casey's) that a linear model can't represent without hand-made terms. |
+| **Why not ARIMA / Prophet / ETS?** | One model per series: ~20,000 store-family series with only 22 months each is too short for per-series seasonal fitting. A global model learns across series and shares drivers (calendar, store type, competition). The seasonal naive half of the ensemble supplies the seasonality. *Not run*: reasoned from series length. |
+| **Why not LSTM / transformers?** | Tabular monthly data, 22 time steps per series: trees are the state of the art there, train in seconds, and are exactly explainable with TreeSHAP. Deep models need far longer histories. *Not run.* |
+| **Why one global model, not one per family or per county?** | A global model with `family` as a feature shares what is common (calendar, store size) and still learns family differences. Per-family models would have ~10× less data each. *Not run*: standard practice for many short series. |
+| **Why forecast at store × family and add up (bottom-up), not forecast counties directly?** | One model serves all three decisions: store deliveries, county trucks, state buying. Adding up gives the state 5.2% WAPE. *A direct county model was not tested*: it's a fair follow-up. |
+| **Why monthly, not weekly?** | ABD buys monthly. 89% of a typical store's liters arrive on one weekday, so a weekly series mostly measures which week the order fell in (noise), not demand. |
+
+#### The loss, the ensemble and tuning
+| Question | Answer and evidence |
+|---|---|
+| **Why Tweedie loss, not squared error on log(liters)?** | Tested: log-target XGBoost has **−22% bias** and 23.9% validation county WAPE, vs −9% and 16.4% for Tweedie. A log model predicts a geometric mean, which systematically under-shoots totals. Tweedie fits non-negative data with many exact zeros and a long tail. |
+| **Why Tweedie, not Poisson?** | Tested: XGBoost-Poisson ties on county WAPE (14.1% vs 13.9% test) but is worse at state level (5.9% vs 5.1%) with higher bias (+2.6%). Tweedie also lets us tune *p* (1.4 won), which includes near-Poisson values (1.1). |
+| **Why blend with the seasonal naive, not use XGBoost alone?** | Opposite errors: XGBoost under-forecasts (−9% validation bias), the seasonal naive over-forecasts (+8%). Blended: county 13.8% vs 14.6% alone, bias +2%. XGBoost alone *is* better at store level (36.6% vs 39.0%); ABD plans at county and state. |
+| **Why the seasonal naive as the partner, not the 3-month moving average?** | The partner must err the *other* way. Moving-average bias is −1% to −6% (same direction as XGBoost), so it can't cancel anything. Seasonal naive bias is +5% to +8%. |
+| **Why a weighted average, not stacking (a meta-model)?** | One weight chosen on three validation months is transparent and hard to over-fit. A meta-model would learn from the same three months with more freedom. |
+| **Why random search, not grid search or Bayesian (Optuna)?** | All 20 random trials landed within 14.3–14.8%: the error surface is flat. A smarter search can't find a peak that isn't there. Random beats grid for a fixed budget because only a few settings matter. |
+| **Why early stopping?** | It picks the number of trees from validation automatically (stops after 100 rounds without improvement), the main defence against over-fitting in boosting. |
+
+#### Evaluation and decision
+| Question | Answer and evidence |
+|---|---|
+| **Why WAPE, not MAPE or RMSE?** | MAPE divides by zero on zero months and lets tiny series dominate. RMSE is dominated by a few giant stores. WAPE reads as "% of liters mis-planned". RMSE is still used, for safety stock. |
+| **Why a time-based split, not random k-fold?** | Random folds put future months in training, which is leakage that makes a forecast look better than it can be. We train on the past, tune on Apr–Jun 2026, test once on Jul–Oct 2026. |
+| **Why empirical intervals, not quantile regression?** | One model, with intervals calibrated on held-out months (the idea behind split conformal prediction), checked on test: 77.5% coverage for a nominal 80%. Quantile regression needs a model per quantile and isn't guaranteed calibrated. |
+| **Why the newsvendor rule, not "order the forecast"?** | Running short and holding extra cost different amounts (~33% lost margin vs ~1.7% a month). The best order is the quantile Cu ÷ (Cu + Co), not the mean. |
+
+#### Hypothesis testing
+| Question | Answer and evidence |
+|---|---|
+| **Why a permutation test, not an ordinary t-test?** | Only 10 Missouri-border counties and skewed volumes: the t-test's normality assumption is shaky. Permutation needs no distribution and is exact for small groups. We report both the HC3 and the permutation p-value; they agree (H1: 0.0003 vs 0.0002). |
+| **Why HC3, not ordinary standard errors?** | Small counties are noisier. HC3 is the robust version recommended for small samples (99 counties). |
+| **Why stacked DiD, not plain two-way fixed effects?** | Entries happen in different months. Plain TWFE then uses already-treated stores as controls and can be biased, even flip sign. Stacking builds a clean comparison per entry month. |
+| **Why not synthetic control?** | It is built for one or a few treated units. We have 116 entry cities, which is what DiD is for. |
+| **Why Holm, not Bonferroni or Benjamini–Hochberg?** | Holm controls the chance of *any* false positive like Bonferroni but is never less powerful. Here both keep 6. BH controls the *share* of false positives and would keep **12** (every p < 0.05). We report the strict 6 as findings and the other 6 as leads. |
+| **Why Mann–Whitney / Wilcoxon, not t-tests, in H4–H23?** | Store volumes are heavily skewed (top 10% of stores = 62% of liters); rank tests aren't dragged by a few giants. |
+
+#### Data, responsible AI and engineering
+| Question | Answer and evidence |
+|---|---|
+| **Why Parquet, not CSV?** | The 938 MB of raw CSVs become a 147 MB Parquet (6× smaller) with column types stored, so dates and IDs can't silently change type between scripts. |
+| **Why SHAP, not the model's built-in "gain" importance?** | Gain says how much a feature was used, not in which direction or for which prediction. SHAP splits *each* forecast into additive, signed contributions, so a planner sees why *this* store got *this* number. |
+| **Why SHAP, not LIME?** | LIME fits a local linear approximation and is unstable from run to run. TreeSHAP is exact for tree models. |
+| **Why PSI for drift, not a KS test?** | With tens of thousands of rows in each window, a KS test flags trivial differences as "significant". PSI measures the *size* of the shift with standard thresholds (0.10 / 0.25). |
+| **Why drop % Hispanic from the model?** | Pre-set rule: keep it only if it improves validation WAPE by > 1%. It improved it by 0.5% (14.27% vs 14.34%), so it was dropped. The test ablation confirmed no loss. |
+| **Why MLflow, not Weights & Biases?** | Runs locally on a SQLite file: free, offline, no account, and anyone can reproduce our 43 runs from the repo. |
+| **Why FastAPI, not Flask or Streamlit?** | Automatic interactive API docs, input validation, and it serves both machines (JSON endpoints) and people (dashboard). Streamlit is a UI only; Flask needs that wiring added by hand. |
+| **Why Docker?** | The same environment on any machine: `docker run` and the planner tool is up, with no "works on my laptop". |
+
 ---
 
 ## 11. Surprise scenarios (decision challenge)
@@ -546,6 +640,8 @@ RAGBRAI); peer-based cold-start model; a randomised regional pilot (A/B) to meas
   coverage 77.5% · safety stock −25% (≈ \$0.73M) · over-buying ≈ 84,000 L/month
 - **SHAP:** own history 78% · store 11% · demographics ~1%
 - **20 extra hypotheses:** 10 / 3 / 7 · H13 +49% month after · H20 1.86× · H22 92% · H23 r = −0.69
+- **Model alternatives (test county WAPE, untuned + blend):** XGBoost 13.9% · LightGBM 13.9% · CatBoost 14.1% ·
+  XGB-Poisson 14.1% · HistGB 14.3% · seed noise 0.2 pts · Random Forest alone 15.1% · Ridge 18.4%
 
 ## 14. Where everything is
 | Need | File |
@@ -555,5 +651,6 @@ RAGBRAI); peer-based cold-start model; a randomised regional pilot (A/B) to meas
 | Forecast and decision | `notebooks/03_forecast_model_and_decision.ipynb` |
 | SHAP, fairness, monitoring | `notebooks/04_explainability_fairness_monitoring.ipynb` |
 | 20 exploratory hypotheses | `notebooks/05_twenty_hypotheses.ipynb`, `reports/twenty_hypotheses.md` |
+| LightGBM / CatBoost / Poisson comparison | `scripts/06_model_alternatives.py` → `reports/tables/model_alternatives.csv` |
 | Report and slides | `reports/final_report.*`, `reports/final_presentation.*` |
 | Code | `src/abd_demand/` (library), `scripts/` (pipeline), `app/` (API) |

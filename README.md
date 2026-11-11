@@ -14,6 +14,7 @@ how to treat border counties and newly licensed stores in that plan.
 | Pre-registration of hypotheses | `reports/pre_registration.md` (written before any 2026 outcome was examined) |
 | Viva preparation | `reports/viva.md` (full guide: every method explained simply + likely questions); `reports/viva_prep.md` (short version) |
 | 20 exploratory hypotheses (H4–H23) | `notebooks/05_twenty_hypotheses.ipynb`, `reports/twenty_hypotheses.md`, slides 14–19 |
+| Why XGBoost and not LightGBM / CatBoost | `reports/tables/model_alternatives.csv`, `reports/viva.md` §8.9 |
 
 ## Headline results
 (Numbers are produced by the notebooks; see `reports/tables/`.)
@@ -42,6 +43,7 @@ uv venv --python 3.11 .venv && uv pip install --python .venv -r pyproject.toml
 .venv/Scripts/python scripts/03_train_forecast.py    # baselines, models, HPO, test, MLflow, ~8 min
 .venv/Scripts/python scripts/04_monitor.py           # drift + retrain decision
 .venv/Scripts/python scripts/05_twenty_hypotheses.py # 20 exploratory hypotheses, ~1 min
+.venv/Scripts/python scripts/06_model_alternatives.py # XGBoost vs LightGBM/CatBoost/Poisson, ~5 min (needs the [experiments] extra)
 .venv/Scripts/python notebooks/_build/build.py       # rebuild and execute notebooks 01-05
 ```
 
